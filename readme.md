@@ -30,3 +30,10 @@ Open index.html in a web browser of your choice
 # Video Demo
 
 https://youtu.be/h7GO9VAifq0
+
+# Future Work
+
+- User authentication for role based data entry (Time did not permit to get this done)
+For example: only a health care worker with a particular title/role will be allowed to add and update information for the hospital. The same can apply for the other agencies. The employee/ worker will only be allowed to add/ update information linked to the office in which they are employed and not the entire set of that agency, unless their role permits them to modifiy data from the entire set and not just a subset.
+
+- A new graphical feature layer can be added to the map to give an overview of the health of vegitation of the land. This can be done at any time, before, during or after any occurance of a disaster using NVDI indices and GPS coordinates. 
