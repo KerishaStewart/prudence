@@ -21,4 +21,6 @@ The disaster readiness web app for Nassau, Bahamas, serves as a valuable tool to
 # How to Run
 Open index.html in a web browser of your choice
 
+# What it Looks Like
+
 ![alt text](./app-screenshot.png)
