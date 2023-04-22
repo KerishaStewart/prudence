@@ -37,3 +37,10 @@ https://youtu.be/h7GO9VAifq0
 For example: only a health care worker with a particular title/role will be allowed to add and update information for the hospital. The same can apply for the other agencies. The employee/ worker will only be allowed to add/ update information linked to the office in which they are employed and not the entire set of that agency, unless their role permits them to modify data from the entire set and not just a subset.
 
 - A new graphical feature layer can be added to the map to give an overview of the health of vegetation of the land. This can be done at any time, before, during or after any occurrence of a disaster using NDVI indices and GPS coordinates. 
+
+# Tech Stack
+
+- Javascript
+- Html
+- Css
+- ArcGIS Javascript SDK (By esri)
