@@ -14,7 +14,7 @@ Key Features:
 - Route Planning: Provides directions between two selected points on the map.
 - Search Function: Users can search for locations within Nassau using coordinates or natural language queries.
 
-# Conclusion:
+# Conclusion
 
 The disaster readiness web app for Nassau, Bahamas, serves as a valuable tool to help the community prepare for, respond to, and recover from hurricane events. By providing critical information and fostering communication between emergency responders and citizens, the app has the potential to save lives and mitigate the impacts of these natural disasters.
 
