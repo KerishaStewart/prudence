@@ -43,4 +43,4 @@ For example: only a health care worker with a particular title/role will be allo
 - Javascript
 - Html
 - Css
-- ArcGIS Javascript SDK (By esri)
+- [ArcGIS Javascript API - Version 4.26](https://developers.arcgis.com/javascript/latest/)
