@@ -1,0 +1,38 @@
+.footer {
+    position: absolute;
+    bottom: 0;
+    height: 60px;
+    width: 100%;
+  }
+  
+  .sublayers {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+  }
+  
+  .sublayers-item {
+    flex-grow: 4;
+    background-color: rgba(34, 111, 14, 0.5);
+    color: #fff;
+    margin: 1px;
+    width: 50%;
+    height: 60px;
+    padding: 0;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  
+  @media (max-width: 767px) {
+    .sublayers {
+      display: none;
+    }
+  }
+  

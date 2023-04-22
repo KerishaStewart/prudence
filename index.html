@@ -1,0 +1,649 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      Edit features with the Editor widget | Sample | ArcGIS Maps SDK for
+      JavaScript 4.26
+    </title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+      .esri-attribution__sources {
+        display: none;
+      }
+      .esri-attribution__powered-by {
+        display: none;
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 0;
+        height: 60px;
+        width: 100%;
+      }
+
+      .sublayers {
+        margin: 0 auto;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        overflow: auto;
+      }
+
+      .sublayers-item {
+        flex-grow: 4;
+        background-color: rgba(34, 111, 14, 0.5);
+        color: #fff;
+        margin: 1px;
+        width: 50%;
+        height: 60px;
+        padding: 0;
+        overflow: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 767px) {
+        .sublayers {
+          display: none;
+        }
+      }
+
+      .visible-layer {
+        color: #fff;
+        background-color: #226f0e;
+      }
+    </style>
+
+    <script>
+     require([
+        "esri/config",
+        "esri/WebMap",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Editor",
+        "esri/Graphic", 
+        "esri/rest/route", 
+        "esri/rest/support/RouteParameters", 
+        "esri/rest/support/FeatureSet",
+        "esri/widgets/Search"
+      ], function (esriConfig, WebMap, MapView, FeatureLayer, Editor, Graphic, route, 
+                    RouteParameters, FeatureSet, Search) {
+
+        esriConfig.apiKey = "AAPK4d7026b26c1f4c899b5769e6f528776eKmKDQS_Kig1ydEft-D-vhbGFhxwkwuhCclGxKmNNqz-MDGL_uZk9OWwDVYxqJ98m";
+
+        //#region feature layer setup and configs
+        const genericNameLabels = {
+        symbol: {
+            type: "text",
+            color: "#FFFFFF",
+            haloColor: "#5E8D74",
+            haloSize: "2px",
+            font: {
+              size: "14px",
+              family: "Noto Sans",
+              style: "italic",
+              weight: "normal"
+            }
+          },
+
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: "$feature.Name"
+          }
+        };
+
+        const hazardLabels = {
+        symbol: {
+            type: "text",
+            color: "#FFFFFF",
+            haloColor: "#5E8D74",
+            haloSize: "2px",
+            font: {
+              size: "14px",
+              family: "Noto Sans",
+              style: "italic",
+              weight: "normal"
+            }
+          },
+
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: "$feature.HazardType"
+          }
+        };
+
+        const hospitalsFeatureLayer = new FeatureLayer({
+          portalItem: {
+            id: "44c56acb1daf40488ddc7344e888950a"
+          },
+          labelingInfo: [genericNameLabels]
+        });
+
+        const hazardsFeatureLayer = new FeatureLayer({
+          portalItem: {
+            id: "3909180cd8d24657af8605de2be0df81"
+          },
+          labelingInfo: [hazardLabels]
+        });
+
+        const roadClosedFeatureLayer = new FeatureLayer({
+          portalItem: {
+            id: "446c5005e79b414695384d3ecca4e7d4"
+          }
+        });
+
+        const hazardAreasPolygonLayer = new FeatureLayer({
+          portalItem: {
+            id: "44c6a45945d9472d87da74e4f326b1dd"
+          }
+        });
+
+        const policeStationsPointLayer = new FeatureLayer({
+          portalItem: {
+            id: "862ff443e02c435397360f3ce1ef5877"
+          },
+          labelingInfo: [genericNameLabels]
+        });
+
+        const fireStationsPointslayer = new FeatureLayer({
+          portalItem: {
+            id: "f09372cc3fa4401db59e365e97fceca9"
+          },
+          labelingInfo: [genericNameLabels]
+        });
+
+        const emerRespondersPointslayer = new FeatureLayer({
+          portalItem: {
+            id: "df0a361b26de4099aa46830587abd57f"
+          },
+          labelingInfo: [genericNameLabels]
+        });
+
+        const emerRequestsPointslayer = new FeatureLayer({
+          portalItem: {
+            id: "3edbda874362410ebe936e4557c222e0"
+          },
+          labelingInfo: [genericNameLabels]
+        });
+        //#endregion
+
+        const map = new WebMap({
+          basemap: "arcgis-topographic", // Basemap layer service
+          layers: [hazardsFeatureLayer, hospitalsFeatureLayer, roadClosedFeatureLayer, hazardAreasPolygonLayer, 
+                    policeStationsPointLayer]
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-77.42710608194665,25.07670488417073],
+          zoom: 14
+        });
+
+        map.add(hospitalsFeatureLayer);
+        map.add(hazardsFeatureLayer);
+        map.add(roadClosedFeatureLayer);
+        map.add(hazardAreasPolygonLayer);
+        map.add(policeStationsPointLayer);
+        map.add(fireStationsPointslayer);
+        map.add(emerRespondersPointslayer);
+        map.add(emerRequestsPointslayer);
+
+        // #region Feature Layer Info Point Mapping
+        view.when(() => {
+          // Create layerInfos for layers in Editor. This
+          // sets the fields for editing.
+
+          const hospitalsPointInfos = {
+            layer: hospitalsFeatureLayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to Field Elements
+                  type: "field",
+                  fieldName: "Name",
+                  label: "Name"
+                },
+                {
+                  type: "field",
+                  fieldName: "CurrentCapacity",
+                  label: "Current Capacity"
+                },
+                {
+                  type: "field",
+                  fieldName: "MaxCapacity",
+                  label: "Max Capacity"
+                },
+                {
+                  type: "field",
+                  fieldName: "Island",
+                  label: "Island"
+                },
+                {
+                  type: "field",
+                  fieldName: "FreeBedCount",
+                  label: "Free Bed Count"
+                },
+                {
+                  type: "field",
+                  fieldName: "Other",
+                  label: "Other"
+                }
+              ]
+            }
+          };
+
+          const hazardsPointInfos = {
+            layer: hazardsFeatureLayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to Field Elements
+                  type: "field",
+                  fieldName: "HazardType",
+                  label: "Hazard type"
+                },
+                {
+                  type: "field",
+                  fieldName: "Description",
+                  label: "Description"
+                },
+                {
+                  type: "field",
+                  fieldName: "Status",
+                  label: "Status"
+                },
+                {
+                  type: "field",
+                  fieldName: "Priority",
+                  label: "Priority"
+                }
+              ]
+            }
+          };
+
+          // Lines info
+          const roadClosedLinesInfo = {
+            layer: roadClosedFeatureLayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to FieldElement
+                  type: "field",
+                  fieldName: "Severity",
+                  label: "Severity"
+                },
+                {
+                  type: "field",
+                  fieldName: "blocktype",
+                  label: "Type of blockage"
+                },
+                {
+                  type: "field",
+                  fieldName: "fullclose",
+                  label: "Full closure"
+                },
+                {
+                  type: "field",
+                  fieldName: "active",
+                  label: "Active"
+                },
+                {
+                  type: "field",
+                  fieldName: "locdesc",
+                  label: "Location Description"
+                }
+              ]
+            }
+          };
+
+          // Polygon layer
+          const hazardAreasPolygonInfos = {
+            layer: hazardAreasPolygonLayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to FieldElement
+                  type: "field",
+                  fieldName: "incidenttype",
+                  label: "Incident Type"
+                },
+                {
+                  type: "field",
+                  fieldName: "activeincid",
+                  label: "Active"
+                },
+                {
+                  type: "field",
+                  fieldName: "descrip",
+                  label: "Description"
+                }
+              ]
+            }
+          };
+
+          const fireStationsPointsInfo = {
+            layer: fireStationsPointslayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to FieldElement
+                  type: "field",
+                  fieldName: "Name",
+                  label: "Name"
+                },
+                {
+                  type: "field",
+                  fieldName: "Location",
+                  label: "Location"
+                },
+                {
+                  type: "field",
+                  fieldName: "ContactNumber",
+                  label: "ContactNumber"
+                },
+                {
+                  type: "field",
+                  fieldName: "FiretruckCount",
+                  label: "FiretruckCount"
+                },
+                {
+                  type: "field",
+                  fieldName: "FirefighterCount",
+                  label: "FirefighterCount"
+                },
+                {
+                  type: "field",
+                  fieldName: "Longitude",
+                  label: "Longitude"
+                },
+                {
+                  type: "field",
+                  fieldName: "Latitude",
+                  label: "Latitude"
+                }
+              ]
+            }
+          };
+
+          const policeStationPointsInfo = {
+            layer: policeStationsPointLayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to FieldElement
+                  type: "field",
+                  fieldName: "Name",
+                  label: "Name"
+                },
+                {
+                  type: "field",
+                  fieldName: "Location",
+                  label: "Location"
+                },
+                {
+                  type: "field",
+                  fieldName: "ContactNumber",
+                  label: "ContactNumber"
+                },
+                {
+                  type: "field",
+                  fieldName: "OfficerCount",
+                  label: "OfficerCount"
+                },
+                {
+                  type: "field",
+                  fieldName: "Lat",
+                  label: "Lat"
+                },
+                {
+                  type: "field",
+                  fieldName: "Long",
+                  label: "Long"
+                }
+              ]
+            }
+          };
+
+          const emergencyResponderPtsInfo = {
+            layer: emerRespondersPointslayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to FieldElement
+                  type: "field",
+                  fieldName: "Name",
+                  label: "Name"
+                },
+                {
+                  type: "field",
+                  fieldName: "Available",
+                  label: "Available"
+                },
+                {
+                  type: "field",
+                  fieldName: "ContactInfo",
+                  label: "Contact Information"
+                },
+                {
+                  type: "field",
+                  fieldName: "Skills",
+                  label: "Skills"
+                }
+              ]
+            }
+          };
+
+          const emergencyRequestsPtInfos = {
+            layer: emerRequestsPointslayer,
+            formTemplate: {
+              // autocasts to FormTemplate
+              elements: [
+                {
+                  // autocasts to FieldElement
+                  type: "field",
+                  fieldName: "Name",
+                  label: "Name"
+                },
+                {
+                  type: "field",
+                  fieldName: "Service",
+                  label: "Service"
+                },
+                {
+                  type: "field",
+                  fieldName: "Priority",
+                  label: "Priority"
+                },
+                {
+                  type: "field",
+                  fieldName: "ContactInfo",
+                  label: "Contact Information"
+                }
+              ]
+            }
+          };
+          //#endregion
+
+          // Editor
+          const editor = new Editor({
+            view: view,
+            //layerInfos: [pointInfos, lineInfos, polyInfos]
+            layerInfos: [hazardsPointInfos, roadClosedLinesInfo, hazardAreasPolygonInfos, hospitalsPointInfos, 
+                        policeStationPointsInfo, fireStationsPointsInfo, emergencyResponderPtsInfo, emerRequestsPointslayer]    
+          });
+
+          //#region layer visibility
+          const sublayersElement = document.querySelector(".sublayers");
+          sublayersElement.addEventListener("click", (event) => {
+            if(event.target.innerText == "Bahamas Hospitals"){
+              hospitalsFeatureLayer.visible = !hospitalsFeatureLayer.visible;
+            }
+            else if(event.target.innerText == "Bahamas Hazards"){
+              hazardsFeatureLayer.visible = !hazardsFeatureLayer.visible;
+            }
+            else if(event.target.innerText == "Road Closure"){
+              roadClosedFeatureLayer.visible = !roadClosedFeatureLayer.visible;
+            }
+            else if(event.target.innerText == "Hazard Areas - Hazard areas"){
+              hazardAreasPolygonLayer.visible = !hazardAreasPolygonLayer.visible;
+            }
+            else if(event.target.innerText == "Police Stations"){
+              policeStationsPointLayer.visible = !policeStationsPointLayer.visible;
+            }
+            else if(event.target.innerText == "Fire Stations"){
+              fireStationsPointslayer.visible = !fireStationsPointslayer.visible;
+            }
+            else if(event.target.innerText == "Emergency Responders"){
+              emerRespondersPointslayer.visible = !emerRespondersPointslayer.visible;
+            }
+            else if(event.target.innerText == "Emergency Requests"){
+              emerRequestsPointslayer.visible = !emerRequestsPointslayer.visible;
+            }
+          });
+          //#endregion
+
+          //#region route and directions
+          const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
+
+          view.on("click", function(event){
+            if (view.graphics.length === 0) {
+              addGraphic("origin", event.mapPoint);
+            } else if (view.graphics.length === 1) {
+              addGraphic("destination", event.mapPoint);
+              getRoute();
+              viewHolder = view;
+            } else {
+              view.graphics.removeAll();
+              addGraphic("origin",event.mapPoint);
+            }
+          });
+
+          function addGraphic(type, point) {
+            const graphic = new Graphic({
+              symbol: {
+                type: "simple-marker",
+                color: (type === "origin") ? "white" : "black",
+                size: "8px"
+              },
+              geometry: point
+            });
+            view.graphics.add(graphic);
+          }
+
+          function getRoute() {
+            const routeParams = new RouteParameters({
+              stops: new FeatureSet({
+                features: view.graphics.toArray()
+              }),
+              returnDirections: true,
+            });
+
+            route.solve(routeUrl, routeParams)
+            .then(function(data) {
+              data.routeResults.forEach(function(result) {
+                result.route.symbol = {
+                  type: "simple-line",
+                  color: [5, 150, 255],
+                  width: 3
+                };
+                view.graphics.add(result.route);
+              });
+              // Display directions
+              if (data.routeResults.length > 0) {
+                const directions = document.createElement("ol");
+                directions.setAttribute("id", "directionsOl");
+                directions.classList = "esri-widget esri-widget--panel esri-directions__scroller";
+                directions.style.marginTop = "0";
+                directions.style.padding = "15px 15px 15px 30px";
+                //console.log(data);
+
+                const features = data.routeResults[0].directions.features;
+                //console.log(features);
+
+                let totalkm = data.routeResults[0].route.attributes.Total_Kilometers.toFixed(2);
+                const total_km = document.createElement("h3");
+                total_km.innerHTML = `Total distance to destination: ${totalkm}km`;
+                directions.appendChild(total_km);
+
+                // Show each direction
+                features.forEach(function(result,i){
+                  const direction = document.createElement("li");
+                  direction.innerHTML = result.attributes.text + " (" + (result.attributes.length.toFixed(2)*1.609344).toFixed(2) + " kilometers)";
+                  directions.appendChild(direction);
+                });
+
+                directions.onclick = () => {
+                  view.graphics.removeAll();
+                    view.ui.empty("top-right");
+                    view.ui.add(search, "top-right");
+                }
+
+                view.ui.empty("top-right");
+                view.ui.add(search, "top-right");
+                view.ui.add(directions, "top-right");
+              }
+            })
+            .catch(function(error){
+              console.log(error);
+            })
+          }
+          //#endregion
+
+          //#region Search
+          const search = new Search({  //Add Search widget
+            view: view
+          });
+
+          view.ui.add(search, "top-right"); //Add to the map
+          //#endregion
+
+          // Add the widget to the view
+          view.ui.add(editor, "top-left");
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <div class="footer">
+      <div class="sublayers esri-widget">
+        <div class="sublayers-item">Bahamas Hospitals</div>
+        <div class="sublayers-item">Bahamas Hazards</div>
+        <div class="sublayers-item">Road Closure</div>
+        <div class="sublayers-item">Hazard Areas - Hazard areas</div>
+        <div class="sublayers-item">Police Stations</div>
+        <div class="sublayers-item">Fire Stations</div>
+        <div class="sublayers-item">Emergency Responders</div>
+        <div class="sublayers-item">Emergency Requests</div>
+      </div>
+    </div>
+  </body>
+</html>
