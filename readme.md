@@ -26,3 +26,7 @@ Open index.html in a web browser of your choice
 # What it Looks Like
 
 ![alt text](./app-screenshot.png)
+
+# Video Demo
+
+https://youtu.be/h7GO9VAifq0
